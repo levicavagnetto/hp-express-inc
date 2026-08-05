@@ -75,21 +75,49 @@ class AppConfig {
       }, { passive: false, capture: true });
 
       var lastTouchY = 0;
+      var touchHistory = [];
+
       window.addEventListener('touchstart', function(e) {
         if (e.touches && e.touches.length > 0) {
           lastTouchY = e.touches[0].clientY;
+          touchHistory = [{ y: lastTouchY, t: Date.now() }];
+          try { window.parent.postMessage('COGNITO_TOUCH_START', '*'); } catch(err) {}
         }
-      }, { passive: true, capture: true }); // passive true here so taps aren't delayed
+      }, { passive: true, capture: true });
 
       window.addEventListener('touchmove', function(e) {
-        // e.preventDefault(); // Might cause issues with forms, but if needed we can uncomment
         if (e.touches && e.touches.length > 0) {
           var currentY = e.touches[0].clientY;
           var deltaY = lastTouchY - currentY;
           lastTouchY = currentY;
-          sendScroll(deltaY);
+          var now = Date.now();
+          touchHistory.push({ y: currentY, t: now });
+          while (touchHistory.length > 0 && now - touchHistory[0].t > 100) {
+            touchHistory.shift();
+          }
+          try { window.parent.postMessage('COGNITO_TOUCH_MOVE:' + deltaY, '*'); } catch(err) {}
         }
       }, { passive: false, capture: true });
+
+      window.addEventListener('touchend', function(e) {
+        var velocity = 0;
+        if (touchHistory.length > 1) {
+          var first = touchHistory[0];
+          var last = touchHistory[touchHistory.length - 1];
+          var dt = last.t - first.t;
+          var dy = last.y - first.y; // dy is negative if user swiped up (scrolling down)
+          if (dt > 0) {
+            velocity = (dy / dt) * 1000;
+          }
+        }
+        touchHistory = [];
+        try { window.parent.postMessage('COGNITO_TOUCH_END:' + velocity, '*'); } catch(err) {}
+      }, { passive: true, capture: true });
+      
+      window.addEventListener('touchcancel', function(e) {
+        touchHistory = [];
+        try { window.parent.postMessage('COGNITO_TOUCH_END:0', '*'); } catch(err) {}
+      }, { passive: true, capture: true });
     })();
   </script>
 ''';
