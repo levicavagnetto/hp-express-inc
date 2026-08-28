@@ -4,9 +4,9 @@ class AppConfig {
   static const String tagline = 'Your freedom begins with a great job!';
   
   // Decoded Secure Contacts (decrypted at runtime to protect from web bots)
-  // Base64 encoded values for hpexpressinc@hotmail.com and (612) 555-0188
+  // Base64 encoded values for hpexpressinc@hotmail.com and (320) 224-4352
   static const String encodedEmail = 'aHBleHByZXNzaW5jQGhvdG1haWwuY29t';
-  static const String encodedPhone = 'KDYxMikgNTU1LTAxODg=';
+  static const String encodedPhone = 'KDMyMCkgMjI0LTQzNTI=';
 
   // Helper scroll and height script snippet for embedded forms
   static const String _scrollForwarderScript = '''

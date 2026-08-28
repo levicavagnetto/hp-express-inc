@@ -3,7 +3,7 @@ import 'theme.dart';
 import 'config.dart';
 import 'apply_screen.dart';
 import 'sections/hero_section.dart';
-import 'sections/benefits_section.dart';
+import 'sections/perks_section.dart';
 import 'sections/equipment_section.dart';
 import 'sections/values_section.dart';
 import 'sections/apply_section.dart';
@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // Global keys to find section widget offsets dynamically
   final GlobalKey _homeKey = GlobalKey();
-  final GlobalKey _benefitsKey = GlobalKey();
+  final GlobalKey _perksKey = GlobalKey();
   final GlobalKey _equipmentKey = GlobalKey();
   final GlobalKey _applyKey = GlobalKey();
 
@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
               key: _homeKey,
               onApplyPressed: _navigateToApply,
             ),
-            BenefitsSection(key: _benefitsKey),
+            PerksSection(key: _perksKey),
             EquipmentSection(key: _equipmentKey),
             const ValuesSection(),
             ApplySection(key: _applyKey),
@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     _buildNavLink('Home', () => _scrollToSection(_homeKey)),
                     const SizedBox(width: 24),
-                    _buildNavLink('Benefits', () => _scrollToSection(_benefitsKey)),
+                    _buildNavLink('Perks', () => _scrollToSection(_perksKey)),
                     const SizedBox(width: 24),
                     _buildNavLink('Equipment', () => _scrollToSection(_equipmentKey)),
                     const SizedBox(width: 24),
@@ -229,10 +229,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           ListTile(
             leading: const Icon(Icons.star, color: Colors.white70),
-            title: const Text('Benefits', style: TextStyle(color: Colors.white)),
+            title: const Text('Perks', style: TextStyle(color: Colors.white)),
             onTap: () {
               Navigator.pop(context);
-              _scrollToSection(_benefitsKey);
+              _scrollToSection(_perksKey);
             },
           ),
           ListTile(
