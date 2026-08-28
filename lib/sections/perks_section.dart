@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../theme.dart';
 
-class BenefitsSection extends StatelessWidget {
-  const BenefitsSection({super.key});
+class PerksSection extends StatelessWidget {
+  const PerksSection({super.key});
 
   @override
   Widget build(BuildContext context) {

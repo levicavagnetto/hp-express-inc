@@ -24,6 +24,7 @@ class _ApplyScreenState extends State<ApplyScreen> {
   String _decodedEmail = 'Loading...';
   String _decodedPhone = 'Loading...';
   String _phoneUrl = '';
+  Drag? _activeDrag;
   
   bool _isLeavingApproved = false;
 
@@ -58,7 +59,38 @@ class _ApplyScreenState extends State<ApplyScreen> {
               dataStr = rawData.toString();
             }
             
-            if (dataStr.startsWith('COGNITO_SCROLL:')) {
+            if (dataStr.startsWith('COGNITO_TOUCH_START')) {
+              if (_scrollController.hasClients) {
+                _activeDrag = _scrollController.position.drag(
+                  DragStartDetails(globalPosition: Offset.zero), 
+                  () { _activeDrag = null; }
+                );
+              }
+            } else if (dataStr.startsWith('COGNITO_TOUCH_MOVE:')) {
+              final parts = dataStr.split(':');
+              if (parts.length >= 2 && _activeDrag != null) {
+                final double deltaY = double.tryParse(parts[1]) ?? 0.0;
+                // Flutter DragUpdateDetails needs a negative delta if we want to scroll down when swiping up.
+                // The deltaY from JS is positive when swiping up.
+                _activeDrag?.update(DragUpdateDetails(
+                  globalPosition: Offset.zero,
+                  delta: Offset(0, -deltaY),
+                  primaryDelta: -deltaY,
+                ));
+              }
+            } else if (dataStr.startsWith('COGNITO_TOUCH_END:')) {
+              final parts = dataStr.split(':');
+              if (parts.length >= 2 && _activeDrag != null) {
+                final double velocity = double.tryParse(parts[1]) ?? 0.0;
+                // velocity from JS: positive if swiped down, negative if swiped up.
+                // Flutter's Velocity pixelsPerSecond is expected.
+                _activeDrag?.end(DragEndDetails(
+                  primaryVelocity: velocity,
+                  velocity: Velocity(pixelsPerSecond: Offset(0, velocity)),
+                ));
+                _activeDrag = null;
+              }
+            } else if (dataStr.startsWith('COGNITO_SCROLL:')) {
               final parts = dataStr.split(':');
               if (parts.length >= 2) {
                 final double deltaY = double.tryParse(parts[1]) ?? 0.0;
